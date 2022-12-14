@@ -17,14 +17,37 @@ function App() {
     [2, 4, 6],
   ];
 
+  function checkRow(cells: string[]) {
+    let ans = false;
+    for (let i = 0; i < 9; i += 3) {
+      ans ||= (cells[i] === cells[i + 1] &&
+      cells[i] === cells[i + 2] &&
+      cells[i] !== '')
+    }
+    return ans;
+  }
+
+  function checkCol(cells: string[]) {
+    let ans = false;
+    for (let i = 0; i < 3; i ++) {
+      ans ||= (cells[i] === cells[i + 3] &&
+      cells[i] === cells[i + 6] &&
+      cells[i] !== '')
+    }
+    return ans;
+  }
+
+  function checkDiagonal(cells: string[]) {
+    return ((cells[0] === cells[4] &&
+      cells[0] === cells[8] && cells[0] !== '') || (
+        cells[2] === cells[4] && cells[2] === cells[6] &&
+        cells[2] !== ''));
+  }
+
   function checkWinner(cells: string[]) {
-    winCombos.forEach((combo) => {
-      let [x, y, z] = combo;
-      if(cells[x] && cells[x] === cells[y] && cells[x] === cells[z]){
-        setWinner(cells[x]);
-        alert(cells[x] + " WINS"!);
-      }
-    })
+    if (checkRow(cells) || checkCol(cells) || checkDiagonal(cells)) {
+      alert("YOU WON")
+    }
   }
 
   function handleClick(index: number) {
@@ -53,7 +76,7 @@ function App() {
     <div className="App">
       <div className='grid'>
         {grid.map((cell, index) => (
-          <div key={index} className={'cell ' + (winner === '' ? '' : 'done')} onClick={() => handleClick(index)} >{cell}</div>
+          <div key={index} className={'cell ' + (winner  ? 'done' : '')} onClick={() => handleClick(index)} >{cell}</div>
         ))}
       </div>
       <div className ='restart' onClick={handleRestart}>Restart</div>
