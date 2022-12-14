@@ -4,79 +4,61 @@ import './App.css';
 function App() {
 
   const [turn, setTurn] = useState('X');
-  const [grid, setGrid] = useState (Array(9).fill(''));
-  const [winner, setWinner] = useState('');
-  const winCombos = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
+  const [grid, setGrid] = useState([
+    ['', '', ''],
+    ['', '', ''],
+    ['', '', '']
+  ]);
+  const [winner, setWinner] = useState('');  
 
-  function checkRow(cells: string[]) {
-    let ans = false;
-    for (let i = 0; i < 9; i += 3) {
-      ans ||= (cells[i] === cells[i + 1] &&
-      cells[i] === cells[i + 2] &&
-      cells[i] !== '')
+  function checkWinner(cells: string[][], rowIndex: number, colIndex: number, trn: string) {
+    let col = 0
+    let row = 0
+    let dg = 0
+    let rdg = 0
+    for (let i = 0; i < 3; i++){
+      cells[rowIndex][i] === trn && col++ 
+      cells[i][colIndex] === trn && row++
+      cells[i][i] === trn && dg++
+      cells[i][3-i] === trn && rdg++
     }
-    return ans;
+    if(col === 3 || row === 3 || dg === 3 || rdg === 3) alert(`${trn} Wins!`)
   }
 
-  function checkCol(cells: string[]) {
-    let ans = false;
-    for (let i = 0; i < 3; i ++) {
-      ans ||= (cells[i] === cells[i + 3] &&
-      cells[i] === cells[i + 6] &&
-      cells[i] !== '')
-    }
-    return ans;
-  }
-
-  function checkDiagonal(cells: string[]) {
-    return ((cells[0] === cells[4] &&
-      cells[0] === cells[8] && cells[0] !== '') || (
-        cells[2] === cells[4] && cells[2] === cells[6] &&
-        cells[2] !== ''));
-  }
-
-  function checkWinner(cells: string[]) {
-    if (checkRow(cells) || checkCol(cells) || checkDiagonal(cells)) {
-      alert("YOU WON")
-    }
-  }
-
-  function handleClick(index: number) {
-    if(grid[index] !== ""){
+  function handleClick(rowIndex: number, colIndex: number) {
+    if(grid[rowIndex][colIndex] !== ""){
       return;
     }
     let cells = [...grid]
+    let trn = turn
     if(turn === 'X'){
-      cells[index] = 'X'
+      cells[rowIndex][colIndex] = 'X';
       setTurn('O')
     }
     else{
-      cells[index] = 'O'
+      cells[rowIndex][colIndex] = 'O'
       setTurn('X')
     }
     setGrid(cells)
-    checkWinner(cells)
+    checkWinner(cells, rowIndex, colIndex, trn)
   }
 
   function handleRestart(){
-    setGrid(Array(9).fill(''))
+    setGrid([
+      ['', '', ''],
+      ['', '', ''],
+      ['', '', '']
+    ])
     setWinner('')
   }
 
   return (
     <div className="App">
       <div className='grid'>
-        {grid.map((cell, index) => (
-          <div key={index} className={'cell ' + (winner  ? 'done' : '')} onClick={() => handleClick(index)} >{cell}</div>
+        {grid.map((row, rowIndex) => (
+          row.map((cell, colIndex) => (
+            <div key={rowIndex + colIndex} className={'cell ' + (winner  ? 'done' : '')} onClick={() => handleClick(rowIndex, colIndex)} >{cell}</div>
+          ))
         ))}
       </div>
       <div className ='restart' onClick={handleRestart}>Restart</div>
