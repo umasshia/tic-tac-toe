@@ -3,10 +3,11 @@ import './App.css';
 
 function App() {
 
-  const [turn, setTurn] = useState<string>('X');
-  const [grid, setGrid] = useState(Array(9).fill(''));
+  const [turn, setTurn] = useState<boolean>(true);
+  const [grid, setGrid] = useState<string[]>(Array(9).fill(''));
   const [winner, setWinner] = useState<string>('');  
-  const checkLines = [
+  const [count, setCount] = useState<number>(1);
+  const [lineCheck, setLineCheck] = useState<number[][][]>([
     [[1, 2], [4, 8], [3, 6]],
     [[0, 2], [4, 7]],
     [[0, 1], [4, 6], [5, 8]],
@@ -16,16 +17,32 @@ function App() {
     [[7, 8], [2, 4], [0, 3]],
     [[6, 8], [1, 4]],
     [[6, 7], [0, 4], [2, 5]]
-];
+  ]);
 
-  function checkWinner(cells: string[][], index: number, trn: string) {
+  function whichTurn(turn: boolean) {
+    if (turn)
+      return 'X';
+    return 'O';
+  }
+
+  function checkWinner(cells: string[], index: number) {
     var player = cells[index];
-    for (var i = 0; i < checkLines[index].length; i++) {
-        var line = checkLines[index][i];
-        if(player === cells[line[0]] && player === cells[line[1]]) {
-          alert(`${trn} WON!`);
-          setWinner(trn)
-        }
+    var check = [...lineCheck];
+    for (var i = 0; i < lineCheck[index].length; i++) {
+      var line = lineCheck[index][i];
+      if (player === cells[line[0]] && player === cells[line[1]]) {
+        alert(`${player} WON!`)
+        setWinner(player)
+      } else if (cells[line[0]] === whichTurn(!turn) || cells[line[1]] === whichTurn(!turn)) {
+        console.log(check)
+        check[index].splice(i, 1)
+        i--
+      }
+    }
+    setLineCheck(check)
+    if (count === 9 && !winner) {
+      alert(`TIE!`);
+      setWinner('T');
     }
   }
 
@@ -34,22 +51,31 @@ function App() {
       return;
     }
     let cells = [...grid]
-    let trn = turn
-    if(turn === 'X'){
-      cells[index] = 'X';
-      setTurn('O')
+      cells[index] = whichTurn(turn);
+      setTurn(!turn);
+    
+    setCount(() => count + 1);
+    setGrid(cells);
+    if (count >= 5) {
+      checkWinner(cells, index)
     }
-    else{
-      cells[index] = 'O'
-      setTurn('X')
-    }
-    setGrid(cells)
-    checkWinner(cells, index, trn)
   }
 
   function handleRestart() {
     setGrid(Array(9).fill(''));
-    setWinner('')
+    setWinner('');
+    setLineCheck([
+      [[1, 2], [4, 8], [3, 6]],
+      [[0, 2], [4, 7]],
+      [[0, 1], [4, 6], [5, 8]],
+      [[4, 5], [0, 6]],
+      [[3, 5], [0, 8], [2, 6], [1, 7]],
+      [[3, 4], [2, 8]],
+      [[7, 8], [2, 4], [0, 3]],
+      [[6, 8], [1, 4]],
+      [[6, 7], [0, 4], [2, 5]]
+    ]);
+    setCount(1);
   }
 
   return (
