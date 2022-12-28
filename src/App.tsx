@@ -25,25 +25,34 @@ function App() {
     return 'O';
   }
 
-  function checkWinner(cells: string[], index: number) {
-    var player = cells[index];
-    var check = [...lineCheck];
-    for (var i = 0; i < lineCheck[index].length; i++) {
-      var line = lineCheck[index][i];
-      if (player === cells[line[0]] && player === cells[line[1]]) {
-        alert(`${player} WON!`)
-        setWinner(player)
-      } else if (cells[line[0]] === whichTurn(!turn) || cells[line[1]] === whichTurn(!turn)) {
-        console.log(check)
-        check[index].splice(i, 1)
-        i--
+  function checkLines(cells: string[], index: number, player: string) {
+    var opponent = whichTurn(!turn)
+    const linesToCheck = [...lineCheck[index]]
+    for (var i = 0; i < linesToCheck.length; i++) {
+      const [cell1, cell2] = linesToCheck[i]
+      const result = cells[cell1] === player && cells[cell2] === player
+        ? true
+        : cells[cell1] === opponent || cells[cell2] === opponent
+        ? (linesToCheck.splice(i, 1), i--, false)
+        : false;
+      if (result) {
+        return true;
       }
     }
-    setLineCheck(check)
-    if (count === 9 && !winner) {
-      alert(`TIE!`);
-      setWinner('T');
-    }
+    lineCheck[index] = linesToCheck
+    setLineCheck([...lineCheck])
+    return false
+  }
+
+  function checkWinner(cells: string[], index: number): string {
+    var player = cells[index];
+    console.log(lineCheck)
+    if (checkLines(cells, index, player))
+      return `${player} WINS`
+    else if (count === 9) 
+      return "IT'S A TIE"
+    else
+      return ''
   }
 
   function handleClick(index: number) {
@@ -57,7 +66,7 @@ function App() {
     setCount(() => count + 1);
     setGrid(cells);
     if (count >= 5) {
-      checkWinner(cells, index)
+      setWinner(checkWinner(cells, index))
     }
   }
 
@@ -80,6 +89,7 @@ function App() {
 
   return (
     <div className="App">
+      <div className='winner'>{winner}</div>
       <div className='grid'>
         {grid.map((cell, index) => (
             <div key={index} className={'cell ' + (winner  ? 'done' : '')} onClick={() => handleClick(index)} >{cell}</div>
