@@ -46,12 +46,11 @@ function App() {
 
   function checkWinner(cells: string[], index: number): string {
     const player = cells[index];
-    console.log(winningLines)
     return checkLines(cells, index, player) 
       ? `${player} WINS`
       : count === 9
       ? "IT'S A TIE"
-      : ""
+      : "";
   }
 
   function handleClick(index: number) {
