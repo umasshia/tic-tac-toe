@@ -26,26 +26,26 @@ function App() {
   }
 
   function checkLines(cells: string[], index: number, player: string) {
-    const opponent = whichTurn(!turn)
-    const linesToCheck = [...lineCheck[index]]
-    for (var i = 0; i < linesToCheck.length; i++) {
-      const [cell1, cell2] = linesToCheck[i]
-      const result = cells[cell1] === player && cells[cell2] === player
-        ? true
-        : cells[cell1] === opponent || cells[cell2] === opponent
-        ? (linesToCheck.splice(i, 1), i--, false)
-        : false;
-      if (result) {
+    const opponent = whichTurn(!turn);
+    const linesToCheck = lineCheck[index];
+  
+    for (let i = 0; i < linesToCheck.length; i++) {
+      const [cell1, cell2] = linesToCheck[i];
+      if (cells[cell1] === player && cells[cell2] === player) {
         return true;
+      } else if (cells[cell1] === opponent || cells[cell2] === opponent) {
+        linesToCheck.splice(i, 1);
+        i--;
       }
     }
-    lineCheck[index] = linesToCheck
-    setLineCheck([...lineCheck])
-    return false
+    lineCheck[index] = linesToCheck;
+    setLineCheck([...lineCheck]);
+    return false;
   }
+  
 
   function checkWinner(cells: string[], index: number): string {
-    var player = cells[index];
+    const player = cells[index];
     console.log(lineCheck)
     return checkLines(cells, index, player) 
       ? `${player} WINS`
