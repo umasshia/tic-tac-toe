@@ -26,7 +26,7 @@ function App() {
   }
 
   function checkLines(cells: string[], index: number, player: string) {
-    var opponent = whichTurn(!turn)
+    const opponent = whichTurn(!turn)
     const linesToCheck = [...lineCheck[index]]
     for (var i = 0; i < linesToCheck.length; i++) {
       const [cell1, cell2] = linesToCheck[i]
