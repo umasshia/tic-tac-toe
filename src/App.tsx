@@ -7,7 +7,7 @@ function App() {
   const [grid, setGrid] = useState<string[]>(Array(9).fill(''));
   const [winner, setWinner] = useState<string>('');  
   const [count, setCount] = useState<number>(1);
-  const [lineCheck, setLineCheck] = useState<number[][][]>([
+  const [winningLines, setWinningLines] = useState<number[][][]>([
     [[1, 2], [4, 8], [3, 6]],
     [[0, 2], [4, 7]],
     [[0, 1], [4, 6], [5, 8]],
@@ -19,15 +19,15 @@ function App() {
     [[6, 7], [0, 4], [2, 5]]
   ]);
 
-  function whichTurn(turn: boolean) {
+  function getPlayer(turn: boolean) {
     if (turn)
       return 'X';
     return 'O';
   }
 
   function checkLines(cells: string[], index: number, player: string) {
-    const opponent = whichTurn(!turn);
-    const linesToCheck = lineCheck[index];
+    const opponent = getPlayer(!turn);
+    const linesToCheck = winningLines[index];
   
     for (let i = 0; i < linesToCheck.length; i++) {
       const [cell1, cell2] = linesToCheck[i];
@@ -38,15 +38,15 @@ function App() {
         i--;
       }
     }
-    lineCheck[index] = linesToCheck;
-    setLineCheck([...lineCheck]);
+    winningLines[index] = linesToCheck;
+    setWinningLines([...winningLines]);
     return false;
   }
   
 
   function checkWinner(cells: string[], index: number): string {
     const player = cells[index];
-    console.log(lineCheck)
+    console.log(winningLines)
     return checkLines(cells, index, player) 
       ? `${player} WINS`
       : count === 9
@@ -59,9 +59,8 @@ function App() {
       return;
     }
     let cells = [...grid]
-      cells[index] = whichTurn(turn);
-      setTurn(!turn);
-    
+    cells[index] = getPlayer(turn);
+    setTurn(!turn);
     setCount(() => count + 1);
     setGrid(cells);
     if (count >= 5) {
@@ -72,7 +71,7 @@ function App() {
   function handleRestart() {
     setGrid(Array(9).fill(''));
     setWinner('');
-    setLineCheck([
+    setWinningLines([
       [[1, 2], [4, 8], [3, 6]],
       [[0, 2], [4, 7]],
       [[0, 1], [4, 6], [5, 8]],
